@@ -81,5 +81,3 @@ class Server {
 }
 
 new Server().start();
-
-module.exports = app;
