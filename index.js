@@ -31,8 +31,7 @@ async function getUser(auth) {
             );
         }
 
-        const data = await response.json();
-        return data;
+        return await response.json();
     } catch (error) {
         // Handle errors
         console.error("Error making API request:", error.message);
@@ -66,10 +65,11 @@ class Server {
         this.app.get("/auth/osu/cb", (req, res) => {
             const code = req.query.code;
             const discordId = req.query.status;
-            const user = getUser(code);
-            res.json({
-                user,
-                message: "You can now safely close this tab",
+            getUser(code).then((user) => {
+                res.json({
+                    user,
+                    message: "You can now safely close this tab",
+                });
             });
         });
 
