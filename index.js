@@ -9,6 +9,7 @@ app.get('/home', (req, res) => {
 });
 
 app.get('/sendDiscordMessage', (req, res) => {
+  console.log(process.env.CLIENT_KEY)
   console.log("wahhhh")
   const message = 'Hello, this is your Express app sending a Discord message!';
   sendMessage(message);
