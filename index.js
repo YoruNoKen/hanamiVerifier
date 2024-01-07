@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const PORT = 4000
+const { sendMessage } = require('./discordBot')
 
 
 app.get('/home', (req, res) => {
@@ -9,7 +10,7 @@ app.get('/home', (req, res) => {
 
 app.get('/sendDiscordMessage', (req, res) => {
   const message = 'Hello, this is your Express app sending a Discord message!';
-  discordBot.sendMessage(message);
+  sendMessage(message);
   res.send('Message sent!');
 });
 
