@@ -8,7 +8,9 @@ async function sendMessage(message) {
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+            content: "Hello, this is a webhook message from Fatih!",
+        }),
     });
 }
 
