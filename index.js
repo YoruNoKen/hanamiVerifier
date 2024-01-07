@@ -69,8 +69,12 @@ class Server {
             "/auth/osu/cb",
             passport.authenticate("osu", { failureRedirect: "/" }),
             (req, res) => {
-                res.send(req.query);
-                // res.send("Success!");
+                res.send("Success!");
+                res.json({
+                    profile: req.query.profile,
+                    code: req.query.code,
+                    message: "Success!",
+                });
             }
         );
 
