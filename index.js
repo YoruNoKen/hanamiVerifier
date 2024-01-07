@@ -16,9 +16,17 @@ async function sendMessage(message) {
 
 async function getUser(auth) {
     try {
+        const token = await fetch(
+            `https://osu.ppy.sh/oauth/token?code=${auth}`,
+            {
+                method: "POST",
+            }
+        );
+        const { access_token } = await token.json();
+
         const response = await fetch("https://osu.ppy.sh/api/v2/me/osu", {
             method: "GET",
-            headers: { Cookie: `osu_session=${auth}` },
+            headers: { Cookie: `osu_session=${access_token}` },
         });
 
         if (!response.ok) {
@@ -58,14 +66,14 @@ class Server {
             passport.authenticate("osu")
         );
 
-        this.app.get("/auth/osu/cb", (req, res) => {
+        this.app.get("/auth/osu/cb", async (req, res) => {
             const code = req.query.code;
             const discordId = req.query.status;
-            getUser(code).then((user) => {
-                res.json({
-                    user,
-                    message: "You can now safely close this tab",
-                });
+            const user = await getUser(code);
+
+            res.json({
+                user,
+                message: "You can now safely close this tab",
             });
         });
 
