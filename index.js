@@ -43,6 +43,7 @@ class Server {
                 callbackURL: callbackUrl,
             },
             (_accessToken, _refreshToken, profile, cb) => {
+                console.log(profile);
                 return cb(null, profile);
             }
         );
@@ -65,12 +66,18 @@ class Server {
             passport.authenticate("osu")
         );
 
-        this.app.get("/auth/osu/cb", (req, res) => {
-            res.json({
-                profile: req.query,
-                message: "Success!",
-            });
-        });
+        this.app.get(
+            "/auth/osu/cb",
+            passport.authenticate("osu", { failureRedirect: "/" }),
+            (req, res) => {
+                res.send("Success!");
+                res.json({
+                    profile: req.query.profile,
+                    code: req.query.code,
+                    message: "Success!",
+                });
+            }
+        );
 
         const host = "localhost";
         const port = process.env.PORT || 8000;
