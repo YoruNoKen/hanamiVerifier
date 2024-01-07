@@ -1,37 +1,86 @@
 const express = require("express");
-const app = express();
-const PORT = 4000;
+const OsuStrategy = require("passport-osu");
+const passport = require("passport");
+const session = require("express-session");
 
 async function sendMessage(message) {
-    return fetch(process.env.webhookURL, {
+    fetch(process.env.webhookURL, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            content: "Hello, this is a webhook message from Fatih!",
+            content: message,
         }),
     });
 }
 
-app.get("/home", (req, res) => {
-    res.status(200).json("Welcome, your app is working well");
-});
+class Server {
+    constructor() {
+        this.app = express();
+        this.app.use(
+            session({
+                secret: "your-secret-key",
+                resave: true,
+                saveUninitialized: true,
+            })
+        );
+    }
 
-app.get("/send", (req, res) => {
-    const message =
-        "Hello, this is your Express app sending a Discord message!";
+    start() {
+        this.app.use(passport.initialize());
+        this.app.use(passport.session());
 
-    sendMessage(message).then((resolved) => {
-        res.send({
-            message: "You can now safely close this tab.",
-            resolved,
+        const clientId = process.env.CLIENT_ID || "clientID";
+        const clientSecret = process.env.CLIENT_SECRET || "clientSecret";
+        const callbackUrl = "http://hanami-verifier.vercel.app/auth/osu/cb";
+
+        const strat = new OsuStrategy(
+            {
+                clientID: clientId,
+                clientSecret,
+                userProfileUrl: "https://osu.ppy.sh/api/v2/me/osu",
+                callbackURL: callbackUrl,
+            },
+            (_accessToken, _refreshToken, profile, cb) => {
+                console.log(profile);
+                return cb(null, profile);
+            }
+        );
+
+        passport.use(strat);
+
+        passport.serializeUser((user, done) => {
+            done(null, user);
         });
-    });
-});
 
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-});
+        passport.deserializeUser((user, done) => {
+            done(null, user);
+        });
+
+        this.app.get(
+            "/auth/osu",
+            (_req, _res, next) => {
+                next();
+            },
+            passport.authenticate("osu")
+        );
+
+        this.app.get(
+            "/auth/osu/cb",
+            passport.authenticate("osu", { failureRedirect: "/" }),
+            (req, res) => {
+                res.send(req.query);
+                // res.send("Success!");
+            }
+        );
+
+        const host = "localhost";
+        const port = process.env.PORT || 8000;
+        this.app.listen(port, host);
+    }
+}
+
+new Server().start();
 
 module.exports = app;
