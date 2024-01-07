@@ -31,32 +31,32 @@ class Server {
         this.app.use(passport.initialize());
         this.app.use(passport.session());
 
-        const clientId = process.env.CLIENT_ID || "clientID";
-        const clientSecret = process.env.CLIENT_SECRET || "clientSecret";
-        const callbackUrl = "http://hanami-verifier.vercel.app/auth/osu/cb";
+        // const clientId = process.env.CLIENT_ID || "clientID";
+        // const clientSecret = process.env.CLIENT_SECRET || "clientSecret";
+        // const callbackUrl = "http://hanami-verifier.vercel.app/auth/osu/cb";
 
-        const strat = new OsuStrategy(
-            {
-                clientID: clientId,
-                clientSecret,
-                userProfileUrl: "https://osu.ppy.sh/api/v2/me/osu",
-                callbackURL: callbackUrl,
-            },
-            (_accessToken, _refreshToken, profile, cb) => {
-                console.log(profile);
-                return cb(null, { osuProfileId: profile.id });
-            }
-        );
+        // const strat = new OsuStrategy(
+        //     {
+        //         clientID: clientId,
+        //         clientSecret,
+        //         userProfileUrl: "https://osu.ppy.sh/api/v2/me/osu",
+        //         callbackURL: callbackUrl,
+        //     },
+        //     (_accessToken, _refreshToken, profile, cb) => {
+        //         console.log(profile);
+        //         return cb(null, { osuProfileId: profile.id });
+        //     }
+        // );
 
-        passport.use(strat);
+        // passport.use(strat);
 
-        passport.serializeUser((user, done) => {
-            done(null, user);
-        });
+        // passport.serializeUser((user, done) => {
+        //     done(null, user);
+        // });
 
-        passport.deserializeUser((user, done) => {
-            done(null, user);
-        });
+        // passport.deserializeUser((user, done) => {
+        //     done(null, user);
+        // });
 
         this.app.get(
             "/auth/osu",
@@ -68,7 +68,7 @@ class Server {
 
         this.app.get("/auth/osu/cb", (req, res) => {
             res.json({
-                code: req,
+                code: req.query.code,
                 message: "Success!",
             });
         });
