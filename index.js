@@ -66,17 +66,13 @@ class Server {
             passport.authenticate("osu")
         );
 
-        this.app.get(
-            "/auth/osu/cb",
-            passport.authenticate("osu", { failureRedirect: "/" }),
-            (req, res) => {
-                res.json({
-                    profile: req.query.profile,
-                    code: req.query.code,
-                    message: "Success!",
-                });
-            }
-        );
+        this.app.get("/auth/osu/cb", (req, res) => {
+            res.json({
+                profile: req.query.profile,
+                code: req.query.code,
+                message: "Success!",
+            });
+        });
 
         const host = "localhost";
         const port = process.env.PORT || 8000;
