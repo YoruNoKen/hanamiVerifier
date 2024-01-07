@@ -43,7 +43,6 @@ class Server {
                 callbackURL: callbackUrl,
             },
             (_accessToken, _refreshToken, profile, cb) => {
-                console.log(profile);
                 return cb(null, profile);
             }
         );
