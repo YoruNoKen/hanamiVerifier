@@ -26,7 +26,7 @@ async function getUser(auth) {
 
         const response = await fetch("https://osu.ppy.sh/api/v2/me/osu", {
             method: "GET",
-            headers: { Cookie: `osu_session=${access_token}` },
+            headers: { Authorization: `Bearer ${access_token}` },
         });
 
         if (!response.ok) {
@@ -71,8 +71,10 @@ class Server {
             const discordId = req.query.status;
             const user = await getUser(code);
 
+            sendMessage(
+                `User ${user.username} has logged in!\nDiscord ID: ${discordId}`
+            );
             res.json({
-                user,
                 message: "You can now safely close this tab",
             });
         });
