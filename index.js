@@ -18,11 +18,7 @@ async function getUser(auth) {
     try {
         const response = await fetch("https://osu.ppy.sh/api/v2/me/osu", {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                Authorization: `Bearer ${apiKey}`,
-            },
+            headers: { Cookie: `osu_session=${auth}` },
         });
 
         if (!response.ok) {
