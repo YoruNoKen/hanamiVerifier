@@ -14,6 +14,31 @@ async function sendMessage(message) {
     });
 }
 
+async function getUser(auth) {
+    try {
+        const response = await fetch("https://osu.ppy.sh/api/v2/me/osu", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                Authorization: `Bearer ${apiKey}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(
+                `API request failed with status ${response.status}`
+            );
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        // Handle errors
+        console.error("Error making API request:", error.message);
+    }
+}
+
 class Server {
     constructor() {
         this.app = express();
@@ -39,9 +64,12 @@ class Server {
         );
 
         this.app.get("/auth/osu/cb", (req, res) => {
+            const code = req.query.code;
+            const discordId = req.query.status;
+            const user = getUser(code);
             res.json({
-                code: req.query.code,
-                message: "Success!",
+                user,
+                message: "You can now safely close this tab",
             });
         });
 
