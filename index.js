@@ -68,8 +68,7 @@ class Server {
 
         this.app.get("/auth/osu/cb", (req, res) => {
             res.json({
-                profile: req.user,
-                code: req.query.code,
+                code: req,
                 message: "Success!",
             });
         });
