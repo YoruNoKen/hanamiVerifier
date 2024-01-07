@@ -71,9 +71,8 @@ class Server {
             const discordId = req.query.status;
             const user = await getUser(code);
 
-            sendMessage(
-                `User ${user.username} has logged in!\nDiscord ID: ${discordId}`
-            );
+            console.log(user);
+            sendMessage(`User fdfddf has logged in!\nDiscord ID: ${discordId}`);
             res.json({
                 message: "You can now safely close this tab",
             });
