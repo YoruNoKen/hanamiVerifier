@@ -44,7 +44,7 @@ class Server {
             },
             (_accessToken, _refreshToken, profile, cb) => {
                 console.log(profile);
-                return cb(null, profile);
+                return cb(null, { osuProfileId: profile.id });
             }
         );
 
@@ -68,7 +68,7 @@ class Server {
 
         this.app.get("/auth/osu/cb", (req, res) => {
             res.json({
-                profile: req.query.profile,
+                profile: req.user,
                 code: req.query.code,
                 message: "Success!",
             });
