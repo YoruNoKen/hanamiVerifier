@@ -1,5 +1,5 @@
 const express = require("express");
-const OsuStrategy = require("passport-osu");
+const { default: OsuStrategy } = require("passport-osu");
 const passport = require("passport");
 const session = require("express-session");
 
