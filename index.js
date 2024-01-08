@@ -22,7 +22,9 @@ class Server {
 
         const clientId = process.env.CLIENT_ID || "clientID";
         const clientSecret = process.env.CLIENT_SECRET || "clientSecret";
-        const callbackUrl = "https://hanami-verifier.vercel.app/auth/osu/cb";
+        const callbackUrl = true
+            ? "https://hanami-verifier.vercel.app/auth/osu/cb"
+            : "http://localhost:8000/auth/osu/cb";
 
         const strat = new OsuStrategy(
             {
@@ -63,7 +65,6 @@ class Server {
                 axios.post(process.env.webhookURL, { content: message });
 
                 res.json({
-                    envs: `${process.env.webhookURL}`,
                     message: "You can now close this tab.",
                 });
             }
@@ -72,6 +73,7 @@ class Server {
         const host = "localhost";
         const port = process.env.PORT || 8000;
         this.app.listen(port, host);
+        console.log(`Server running at http://${host}:${port}/`);
     }
 }
 
