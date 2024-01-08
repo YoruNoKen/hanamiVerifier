@@ -4,15 +4,19 @@ const passport = require("passport");
 const session = require("express-session");
 
 async function sendMessage(message) {
-    fetch(process.env.webhookURL, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            content: message,
-        }),
-    });
+    try {
+        await fetch(process.env.webhookURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                content: message,
+            }),
+        });
+    } catch (e) {
+        throw new Error(e);
+    }
 }
 
 class Server {
