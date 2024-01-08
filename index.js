@@ -2,6 +2,7 @@ const express = require("express");
 const { default: OsuStrategy } = require("passport-osu");
 const passport = require("passport");
 const session = require("express-session");
+const axios = require("axios");
 
 class Server {
     constructor() {
