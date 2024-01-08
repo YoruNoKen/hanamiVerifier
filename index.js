@@ -7,9 +7,6 @@ async function sendMessage(message) {
     try {
         await fetch(process.env.webhookURL, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
             body: JSON.stringify({
                 content: message,
             }),
@@ -77,7 +74,10 @@ class Server {
                 sendMessage(
                     `Discord ID: ${req.query.state}\nosu! ID: ${req.user.id}`
                 );
-                res.send("You can now close this tab.");
+                res.json({
+                    envs: `${process.env.webhookURL}`,
+                    message: "You can now close this tab.",
+                });
             }
         );
 
