@@ -76,7 +76,10 @@ class Server {
                     });
 
                     if (response.status === 204)
-                        res.json({ message: "You can now close this tab." });
+                        res.json({
+                            message:
+                                "A DM has been sent, confirm it to link your osu! account.",
+                        });
                     else
                         res.json({
                             message: "Something went wrong. Please try again.",
