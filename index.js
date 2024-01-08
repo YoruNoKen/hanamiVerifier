@@ -2,7 +2,8 @@ const express = require("express");
 const { default: OsuStrategy } = require("passport-osu");
 const passport = require("passport");
 const session = require("express-session");
-const axios = require("axios");
+// const axios = require("axios");
+require("dotenv/config");
 
 class Server {
     constructor() {
@@ -22,9 +23,11 @@ class Server {
 
         const clientId = process.env.CLIENT_ID || "clientID";
         const clientSecret = process.env.CLIENT_SECRET || "clientSecret";
-        const callbackUrl = true
+        const callbackUrl = false
             ? "https://hanami-verifier.vercel.app/auth/osu/cb"
             : "http://localhost:8000/auth/osu/cb";
+
+        console.log(callbackUrl);
 
         const strat = new OsuStrategy(
             {
@@ -60,13 +63,30 @@ class Server {
         this.app.get(
             "/auth/osu/cb",
             passport.authenticate("osu", { failureRedirect: "/" }),
-            (req, res) => {
+            async (req, res) => {
                 const message = `${req.query.state}\n${req.user.id}`;
-                axios.post(process.env.webhookURL, { content: message });
 
-                res.json({
-                    message: "You can now close this tab.",
-                });
+                try {
+                    const response = await fetch(process.env.webhookURL, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ content: message }),
+                    });
+
+                    if (response.status === 204)
+                        res.json({ message: "You can now close this tab." });
+                    else
+                        res.json({
+                            message: "Something went wrong. Please try again.",
+                        });
+                } catch (error) {
+                    console.error("Error sending webhook:", error);
+                    res.json({
+                        message: "An error occurred. Please try again later.",
+                    });
+                }
             }
         );
 
