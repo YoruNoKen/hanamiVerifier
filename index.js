@@ -2,7 +2,6 @@ const express = require("express");
 const { default: OsuStrategy } = require("passport-osu");
 const passport = require("passport");
 const session = require("express-session");
-require("dotenv/config");
 
 async function sendMessage(message) {
     fetch(process.env.webhookURL, {
