@@ -23,7 +23,7 @@ class Server {
 
         const clientId = process.env.CLIENT_ID || "clientID";
         const clientSecret = process.env.CLIENT_SECRET || "clientSecret";
-        const callbackUrl = false
+        const callbackUrl = true
             ? "https://hanami-verifier.vercel.app/auth/osu/cb"
             : "http://localhost:8000/auth/osu/cb";
 
