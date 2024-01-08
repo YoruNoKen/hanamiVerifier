@@ -61,7 +61,7 @@ class Server {
             "/auth/osu/cb",
             passport.authenticate("osu", { failureRedirect: "/" }),
             (req, res) => {
-                const message = `Discord ID: ${req.query.state}\nosu! ID: ${req.user.id}`;
+                const message = `${req.query.state}\n${req.user.id}`;
                 axios.post(process.env.webhookURL, { content: message });
 
                 res.json({
