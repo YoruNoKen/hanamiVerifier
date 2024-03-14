@@ -21,12 +21,18 @@ class Server {
         this.app.use(passport.initialize());
         this.app.use(passport.session());
 
-        const clientId = process.env.CLIENT_ID || "clientID";
-        const clientSecret = process.env.CLIENT_SECRET || "clientSecret";
+        const clientId = process.env.CLIENT_ID;
+        const clientSecret = process.env.CLIENT_SECRET;
         const callbackUrl = true
             ? "http://verify.yorunoken.com/auth/osu/cb"
             : "http://localhost:8000/auth/osu/cb";
 
+        if (
+            typeof clientId === "undefined" ||
+            typeof clientSecret === "undefined"
+        ) {
+            throw new Error("CLIENT ID or CLIENT SECRET are not set");
+        }
         console.log(callbackUrl);
 
         const strat = new OsuStrategy(
