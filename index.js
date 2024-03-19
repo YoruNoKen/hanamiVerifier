@@ -28,7 +28,6 @@ class Server {
         if (typeof clientId === "undefined" || typeof clientSecret === "undefined" || typeof webhookUrl === "undefined") {
             throw new Error("CLIENT ID, CLIENT SECRET or webhookUrl are not set");
         }
-        console.log(callbackUrl);
         console.log(__dirname + "/html/success.html");
 
         const strat = new OsuStrategy(
@@ -55,7 +54,7 @@ class Server {
         });
 
         this.app.get("/", (_req, res) => {
-            res.sendFile(__dirname + "/index.html");
+            res.sendFile(__dirname + "/html/index.html");
         });
 
         this.app.get(
@@ -77,12 +76,12 @@ class Server {
                 body: JSON.stringify({ content: message }),
             });
 
-            if (response.status === 204) res.sendFile(__dirname + "/success.html");
-            else res.sendFile(__dirname + "/error.html");
+            if (response.status === 204) res.sendFile(__dirname + "/html/success.html");
+            else res.sendFile(__dirname + "/html/error.html");
         });
 
         this.app.get("*", (_req, res) => {
-            res.sendFile(path.join(__dirname, "public", "/index.html"));
+            res.sendFile(path.join(__dirname, "public", "/html/index.html"));
         });
 
         const host = "localhost";
