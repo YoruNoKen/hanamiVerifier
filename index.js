@@ -3,6 +3,7 @@ const { default: OsuStrategy } = require("passport-osu");
 const passport = require("passport");
 const session = require("express-session");
 const path = require("path");
+const { createDecipheriv } = require("crypto");
 
 class Server {
     constructor() {
@@ -23,12 +24,28 @@ class Server {
         const clientId = process.env.CLIENT_ID;
         const clientSecret = process.env.CLIENT_SECRET;
         const webhookUrl = process.env.webhookURL;
+        const keyString = process.env.KEY;
+        const ivString = process.env.IV;
         const callbackUrl = parseInt(process.env.DEV) === 1 ? "http://localhost:8000/auth/osu/cb" : "http://verify.yorunoken.com/auth/osu/cb";
 
-        if (typeof clientId === "undefined" || typeof clientSecret === "undefined" || typeof webhookUrl === "undefined") {
-            throw new Error("CLIENT ID, CLIENT SECRET or webhookUrl are not set");
+        if (typeof clientId === "undefined" || typeof clientSecret === "undefined" || typeof webhookUrl === "undefined" || typeof keyString === "undefined" || typeof ivString === "undefined") {
+            throw new Error("ENV variables are not set!");
         }
-        console.log(__dirname + "/html/success.html");
+
+        const key = Buffer.from(keyString.split(",").map(Number));
+        const iv = Buffer.from(ivString.split(",").map(Number));
+        const algorithm = "aes-256-cbc";
+
+        function decrypt(encryptedData) {
+            try {
+                const decipher = createDecipheriv(algorithm, key, iv);
+                let decrypted = decipher.update(encryptedData, "hex", "utf8");
+                decrypted += decipher.final("utf8");
+                return decrypted;
+            } catch (e) {
+                return null;
+            }
+        }
 
         const strat = new OsuStrategy(
             {
@@ -66,8 +83,16 @@ class Server {
         );
 
         this.app.get("/auth/osu/cb", passport.authenticate("osu", { failureRedirect: "/" }), async (req, res) => {
-            const message = `${req.query.state}\n${req.user.id}`;
+            const encryptedDiscordId = req.query.state;
+            const osuId = req.user.id;
 
+            const discordId = decrypt(encryptedDiscordId);
+            if (discordId === null) {
+                res.sendFile(__dirname + "/html/invalid-buffer.html");
+                return;
+            }
+
+            const message = `${discordId}\n${osuId}`;
             const response = await fetch(webhookUrl, {
                 method: "POST",
                 headers: {
