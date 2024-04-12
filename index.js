@@ -28,17 +28,8 @@ class Server {
         const ivString = process.env.IV;
         const callbackUrl = parseInt(process.env.DEV) === 1 ? "http://localhost:8000/auth/osu/cb" : "http://verify.yorunoken.com/auth/osu/cb";
 
-        if (
-            typeof tursoToken === "undefined" ||
-            typeof tursoUrl === "undefined" ||
-            typeof clientId === "undefined" ||
-            typeof clientSecret === "undefined" ||
-            typeof keyString === "undefined" ||
-            typeof ivString === "undefined"
-        ) {
+        if (typeof clientId === "undefined" || typeof clientSecret === "undefined" || typeof keyString === "undefined" || typeof ivString === "undefined") {
             let unsetVars = [];
-            if (typeof tursoToken === "undefined") unsetVars.push("TURSO_TOKEN");
-            if (typeof tursoUrl === "undefined") unsetVars.push("TURSO_URL");
             if (typeof clientId === "undefined") unsetVars.push("CLIENT_ID");
             if (typeof clientSecret === "undefined") unsetVars.push("CLIENT_SECRET");
             if (typeof keyString === "undefined") unsetVars.push("KEY");
