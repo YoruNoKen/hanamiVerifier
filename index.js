@@ -35,6 +35,7 @@ class Server {
             if (typeof keyString === "undefined") unsetVars.push("KEY");
             if (typeof ivString === "undefined") unsetVars.push("IV");
 
+            console.log("hi");
             throw new Error(`ENV variables are not set!: ${unsetVars.join(", ")}`);
         }
 
