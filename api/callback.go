@@ -17,7 +17,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 	if err != nil || discordId == nil {
 		fmt.Println("Error getting discord ID from state:", err)
 		r.Header.Set("Cache-Control", "no-cache")
-		http.Redirect(w, r, utils.ServeHtml(r, "error"), http.StatusPermanentRedirect)
+		http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
 		return
 	}
 
@@ -25,7 +25,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error exchanging code:", err)
 		r.Header.Set("Cache-Control", "no-cache")
-		http.Redirect(w, r, utils.ServeHtml(r, "error"), http.StatusPermanentRedirect)
+		http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
 		return
 	}
 
@@ -41,7 +41,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error making request to https://osu.ppy.sh/api/v2/me: ", err)
 		r.Header.Set("Cache-Control", "no-cache")
-		http.Redirect(w, r, utils.ServeHtml(r, "error"), http.StatusPermanentRedirect)
+		http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
 		return
 	}
 
@@ -49,7 +49,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 	if err := json.Unmarshal(bytes, &data); err != nil {
 		fmt.Println("Error parsing Json:", err)
 		r.Header.Set("Cache-Control", "no-cache")
-		http.Redirect(w, r, utils.ServeHtml(r, "error"), http.StatusPermanentRedirect)
+		http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
 		return
 	}
 
@@ -57,7 +57,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error while opening the database:", err)
 		r.Header.Set("Cache-Control", "no-cache")
-		http.Redirect(w, r, utils.ServeHtml(r, "error"), http.StatusPermanentRedirect)
+		http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
 		return
 	}
 
@@ -68,7 +68,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error while selecting existing row:", err)
 		r.Header.Set("Cache-Control", "no-cache")
-		http.Redirect(w, r, utils.ServeHtml(r, "error"), http.StatusPermanentRedirect)
+		http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
 		return
 	}
 
@@ -78,7 +78,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 		if _, err := db.Exec("UPDATE users SET banchoId = ? WHERE id = ?", data["id"], discordId); err != nil {
 			fmt.Println("Error while inserting into the database (1):", err)
 			r.Header.Set("Cache-Control", "no-cache")
-			http.Redirect(w, r, utils.ServeHtml(r, "error"), http.StatusPermanentRedirect)
+			http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
 		}
 		return
 	}
@@ -86,6 +86,8 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 	if _, err := db.Exec("INSERT OR IGNORE INTO users (id, banchoId) values (?, ?)", discordId, data["id"]); err != nil {
 		fmt.Println("Error while inserting into the database (2):", err)
 		r.Header.Set("Cache-Control", "no-cache")
-		http.Redirect(w, r, utils.ServeHtml(r, "error"), http.StatusPermanentRedirect)
+		http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
 	}
+
+	http.Redirect(w, r, "/success", http.StatusPermanentRedirect)
 }
