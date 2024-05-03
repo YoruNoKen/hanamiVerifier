@@ -47,7 +47,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 
 	var data map[string]interface{}
 	if err := json.Unmarshal(bytes, &data); err != nil {
-		fmt.Println("Error parsing Json: ", err)
+		fmt.Println("Error parsing Json:", err)
 		r.Header.Set("Cache-Control", "no-cache")
 		http.Redirect(w, r, utils.ServeHtml(r, "error"), http.StatusPermanentRedirect)
 		return
@@ -55,7 +55,9 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 
 	db, err := sql.Open("sqlite3", "/root/HanamiBot/src/data.db")
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error while opening the database:", err)
+		r.Header.Set("Cache-Control", "no-cache")
+		http.Redirect(w, r, utils.ServeHtml(r, "error"), http.StatusPermanentRedirect)
 		return
 	}
 
@@ -64,7 +66,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 	var rowExists bool
 	err = db.QueryRow(`SELECT EXISTS(SELECT 1 FROM users WHERE id = ?)`, discordId).Scan(&rowExists)
 	if err != nil {
-		fmt.Println("Error while selecting existing row: ", err)
+		fmt.Println("Error while selecting existing row:", err)
 		r.Header.Set("Cache-Control", "no-cache")
 		http.Redirect(w, r, utils.ServeHtml(r, "error"), http.StatusPermanentRedirect)
 		return
@@ -74,7 +76,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 
 	if rowExists {
 		if _, err := db.Exec("UPDATE users SET banchoId = ? WHERE id = ?", data["id"], discordId); err != nil {
-			fmt.Println("Error while inserting into the database: ", err)
+			fmt.Println("Error while inserting into the database (1):", err)
 			r.Header.Set("Cache-Control", "no-cache")
 			http.Redirect(w, r, utils.ServeHtml(r, "error"), http.StatusPermanentRedirect)
 		}
@@ -82,7 +84,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, err := db.Exec("INSERT OR IGNORE INTO users (id, ?) values (?, ?)", discordId, data["id"]); err != nil {
-		fmt.Println("Error while inserting into the database: ", err)
+		fmt.Println("Error while inserting into the database (2):", err)
 		r.Header.Set("Cache-Control", "no-cache")
 		http.Redirect(w, r, utils.ServeHtml(r, "error"), http.StatusPermanentRedirect)
 	}

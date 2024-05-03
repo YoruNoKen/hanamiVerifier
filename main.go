@@ -23,6 +23,7 @@ func main() {
 
 	http.HandleFunc("/", handlers.Index)
 	http.HandleFunc("/error", handlers.Error)
+	http.HandleFunc("/success", handlers.Success)
 
 	http.HandleFunc("/auth/osu", api.Auth)
 	http.HandleFunc("/auth/osu/cb", api.Callback)
