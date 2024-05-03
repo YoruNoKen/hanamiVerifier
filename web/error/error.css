@@ -1,0 +1,23 @@
+body {
+    font-family: monospace;
+    margin: 0;
+    padding: 1rem;
+    font-size: 1.125rem;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.inner-box {
+    text-align: center;
+}
+
+.title {
+    font-size: 1.875rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+}
+
+.discord-link {
+    color: aquamarine;
+    text-decoration: none;
+}
