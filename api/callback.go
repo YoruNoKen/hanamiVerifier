@@ -53,9 +53,11 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println(data["id"])
+
 	idInt, ok := data["id"].(int)
 	if !ok {
-		fmt.Println("Error converting id to float64")
+		fmt.Println("Error converting id to int")
 		r.Header.Set("Cache-Control", "no-cache")
 		http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
 		return
