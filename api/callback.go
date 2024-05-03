@@ -64,7 +64,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	var rowExists bool
-	err = db.QueryRow(`SELECT EXISTS(SELECT 1 FROM users WHERE id = ?)`, discordId).Scan(&rowExists)
+	err = db.QueryRow(`SELECT EXISTS(SELECT 1 FROM users WHERE id = ?)`, string(*discordId)).Scan(&rowExists)
 	if err != nil {
 		fmt.Println("Error while selecting existing row:", err)
 		r.Header.Set("Cache-Control", "no-cache")
@@ -75,7 +75,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(rowExists)
 
 	if rowExists {
-		if _, err := db.Exec("UPDATE users SET banchoId = ? WHERE id = ?", data["id"], discordId); err != nil {
+		if _, err := db.Exec("UPDATE users SET banchoId = ? WHERE id = ?", data["id"], string(*discordId)); err != nil {
 			fmt.Println("Error while inserting into the database (1):", err)
 			r.Header.Set("Cache-Control", "no-cache")
 			http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
@@ -83,7 +83,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, err := db.Exec("INSERT OR IGNORE INTO users (id, banchoId) values (?, ?)", discordId, data["id"]); err != nil {
+	if _, err := db.Exec("INSERT OR IGNORE INTO users (id, banchoId) values (?, ?)", string(*discordId), data["id"]); err != nil {
 		fmt.Println("Error while inserting into the database (2):", err)
 		r.Header.Set("Cache-Control", "no-cache")
 		http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
