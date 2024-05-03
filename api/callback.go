@@ -83,7 +83,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, err := db.Exec("INSERT OR IGNORE INTO users (id, ?) values (?, ?)", discordId, data["id"]); err != nil {
+	if _, err := db.Exec("INSERT OR IGNORE INTO users (id, banchoId) values (?, ?)", discordId, data["id"]); err != nil {
 		fmt.Println("Error while inserting into the database (2):", err)
 		r.Header.Set("Cache-Control", "no-cache")
 		http.Redirect(w, r, utils.ServeHtml(r, "error"), http.StatusPermanentRedirect)
