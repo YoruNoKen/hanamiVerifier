@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func GetIdFromState(state string) (*string, error) {
+func GetIdFromState(state string) (string, error) {
 	isDev := os.Getenv("DEV") == "1"
 
 	filePath := "/root/users_cache.txt"
@@ -15,17 +15,17 @@ func GetIdFromState(state string) (*string, error) {
 
 	idFiles, err := os.ReadFile(filePath)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	var foundId *string
+	var foundId string
 
 	lines := strings.Split(string(idFiles), "\n")
 	for _, line := range lines {
 		currState, currId, _ := strings.Cut(line, "=")
 
 		if currState == state {
-			foundId = &currId
+			foundId = currId
 			break
 		}
 	}
