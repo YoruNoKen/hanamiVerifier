@@ -53,16 +53,6 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(data["id"])
-
-	idInt, ok := data["id"].(int)
-	if !ok {
-		fmt.Println("Error converting id to int")
-		r.Header.Set("Cache-Control", "no-cache")
-		http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
-		return
-	}
-
 	db, err := sql.Open("sqlite3", "/root/HanamiBot/src/data.db")
 	if err != nil {
 		fmt.Println("Error while opening the database:", err)
@@ -86,7 +76,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(discordId)
 
 	if rowExists {
-		if _, err := db.Exec("UPDATE users SET banchoId = ? WHERE id = ?", string(idInt), discordId); err != nil {
+		if _, err := db.Exec("UPDATE users SET banchoId = ? WHERE id = ?", fmt.Sprintf("%.0f", data["id"]), discordId); err != nil {
 			fmt.Println("Error while inserting into the database (1):", err)
 			r.Header.Set("Cache-Control", "no-cache")
 			http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
@@ -94,7 +84,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, err := db.Exec("INSERT OR IGNORE INTO users (id, banchoId) values (?, ?)", discordId, string(idInt)); err != nil {
+	if _, err := db.Exec("INSERT OR IGNORE INTO users (id, banchoId) values (?, ?)", discordId, fmt.Sprintf("%.0f", data["id"])); err != nil {
 		fmt.Println("Error while inserting into the database (2):", err)
 		r.Header.Set("Cache-Control", "no-cache")
 		http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
