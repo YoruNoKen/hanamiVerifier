@@ -45,9 +45,17 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var data map[string]string
+	var data map[string]interface{}
 	if err := json.Unmarshal(bytes, &data); err != nil {
 		fmt.Println("Error parsing Json:", err)
+		r.Header.Set("Cache-Control", "no-cache")
+		http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
+		return
+	}
+
+	idInt, ok := data["id"].(int)
+	if !ok {
+		fmt.Println("Error converting id to float64")
 		r.Header.Set("Cache-Control", "no-cache")
 		http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
 		return
@@ -76,7 +84,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(discordId)
 
 	if rowExists {
-		if _, err := db.Exec("UPDATE users SET banchoId = ? WHERE id = ?", string(data["id"]), discordId); err != nil {
+		if _, err := db.Exec("UPDATE users SET banchoId = ? WHERE id = ?", string(idInt), discordId); err != nil {
 			fmt.Println("Error while inserting into the database (1):", err)
 			r.Header.Set("Cache-Control", "no-cache")
 			http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
@@ -84,7 +92,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, err := db.Exec("INSERT OR IGNORE INTO users (id, banchoId) values (?, ?)", discordId, string(data["id"])); err != nil {
+	if _, err := db.Exec("INSERT OR IGNORE INTO users (id, banchoId) values (?, ?)", discordId, string(idInt)); err != nil {
 		fmt.Println("Error while inserting into the database (2):", err)
 		r.Header.Set("Cache-Control", "no-cache")
 		http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
