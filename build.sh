@@ -1,0 +1,1 @@
+go build -o verify_yorunoken_com
