@@ -45,7 +45,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var data map[string]interface{}
+	var data map[string]string
 	if err := json.Unmarshal(bytes, &data); err != nil {
 		fmt.Println("Error parsing Json:", err)
 		r.Header.Set("Cache-Control", "no-cache")
@@ -76,7 +76,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(discordId)
 
 	if rowExists {
-		if _, err := db.Exec("UPDATE users SET banchoId = ? WHERE id = ?", data["id"], discordId); err != nil {
+		if _, err := db.Exec("UPDATE users SET banchoId = ? WHERE id = ?", string(data["id"]), discordId); err != nil {
 			fmt.Println("Error while inserting into the database (1):", err)
 			r.Header.Set("Cache-Control", "no-cache")
 			http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
@@ -84,7 +84,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, err := db.Exec("INSERT OR IGNORE INTO users (id, banchoId) values (?, ?)", discordId, data["id"]); err != nil {
+	if _, err := db.Exec("INSERT OR IGNORE INTO users (id, banchoId) values (?, ?)", discordId, string(data["id"])); err != nil {
 		fmt.Println("Error while inserting into the database (2):", err)
 		r.Header.Set("Cache-Control", "no-cache")
 		http.Redirect(w, r, "/error", http.StatusPermanentRedirect)
